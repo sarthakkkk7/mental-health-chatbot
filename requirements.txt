@@ -1,0 +1,13 @@
+Flask==2.3.2
+Flask-SQLAlchemy==3.0.5
+cohere==4.34.0
+Werkzeug==2.3.7
+Spacy==3.2.1
+nltk==3.6.5
+Spacytextblob==3.0.1
+
+
+Cohort API key
+9ugWXHUfjx1a10JgzDyBWGaetyYQwjzaMXExeqM8
+
+git add .

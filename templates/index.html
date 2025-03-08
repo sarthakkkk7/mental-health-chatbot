@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindfulChat - AI Mental Health Support</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background-image: url('https://source.unsplash.com/1600x900/?mental,health');
+            background-size: cover;
+            background-position: center;
+        }
+        .user-message {
+            background-color: #3b82f6; /* Blue */
+            color: white;
+            border-radius: 1rem 1rem 0 1rem;
+            align-self: flex-end;
+            max-width: 70%;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #e2e8f0; /* Light gray */
+            color: #1e293b; /* Dark gray */
+            border-radius: 1rem 1rem 1rem 0;
+            align-self: flex-start;
+            max-width: 70%;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="bg-white bg-opacity-90 rounded-lg shadow-xl w-full max-w-4xl p-6">
+        <div class="header bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg p-6 text-center">
+            <h1 class="text-3xl font-bold">MindfulChat</h1>
+            <p class="text-lg">Your AI-powered mental health assistant</p>
+        </div>
+        
+        <div class="mt-6">
+            <div class="chat-container bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-[70vh]">
+                <div id="chatMessages" class="chat-messages flex-1 p-4 overflow-y-auto bg-gray-50">
+                    <div class="welcome-message bg-blue-100 p-4 rounded-lg mb-4 text-center">
+                        <h3 class="text-lg font-semibold">Welcome to MindfulChat!</h3>
+                        <p class="text-gray-700">I'm here to listen and provide support. How are you feeling today?</p>
+                    </div>
+                    <div class="bot-message p-4 rounded-lg mb-4">
+                        Hello! I'm MindfulBot. You can tell me about what's on your mind, and I'll do my best to help.
+                    </div>
+                </div>
+                
+                <div class="chat-input flex p-4 border-t border-gray-200 bg-white">
+                    <input type="text" id="userInput" class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type your message here..." />
+                    <button id="sendButton" class="ml-2 bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-300">Send</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold">Mental Health Resources</h3>
+            <ul class="mt-4 space-y-2">
+                <li><a href="/resources" class="text-blue-500 hover:underline">National Suicide Prevention Helpline: 9152987821</a></li>
+                <li><a href="/resources" class="text-blue-500 hover:underline">Vandrevala Foundation Helpline</a></li>
+                <li><a href="/resources" class="text-blue-500 hover:underline">Find a Therapist Near You</a></li>
+                <li><a href="/resources" class="text-blue-500 hover:underline">Mental Health Articles</a></li>
+            </ul>
+            <div class="mt-4 text-sm text-gray-600">
+                <p>If you're in crisis, please contact emergency services or a mental health professional immediately.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-6 text-center text-gray-600">
+        <p>&copy; 2025 MindfulChat | PHCET IT Dept. | Mini Project</p>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            const userInput = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            
+            function addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'user-message p-4 rounded-lg mb-4';
+                messageDiv.textContent = message;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function addBotMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'bot-message p-4 rounded-lg mb-4';
+                messageDiv.innerHTML = message; // Use innerHTML to render links
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message !== '') {
+                    addUserMessage(message);
+                    userInput.value = '';
+                    
+                    fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: message }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        addBotMessage(data.response);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        addBotMessage('Sorry, I encountered an error. Please try again.');
+                    });
+                }
+            }
+            
+            sendButton.addEventListener('click', sendMessage);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

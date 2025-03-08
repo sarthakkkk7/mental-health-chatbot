@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - MindfulChat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background-image: url('https://source.unsplash.com/1600x900/?mental,health');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="bg-white bg-opacity-90 rounded-lg shadow-xl w-full max-w-4xl p-8">
+        <div class="header text-center">
+            <h1 class="text-3xl font-bold text-blue-600">MindfulChat</h1>
+            <p class="text-lg text-gray-700">Your AI-powered mental health assistant</p>
+        </div>
+        
+        <div class="mt-6">
+            <a href="/" class="text-blue-500 hover:underline">← Back to Chat</a>
+            <h2 class="text-2xl font-semibold mt-4">Mental Health Resources</h2>
+            <p class="text-gray-700">A collection of helpful resources for mental health support and education.</p>
+            
+            <div class="resource-container mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for resource in resources %}
+                    <div class="resource-card bg-gray-50 p-4 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-blue-600">{{ resource.title }}</h3>
+                        <p class="text-gray-700 mt-2">{{ resource.description }}</p>
+                        <a href="{{ resource.url }}" target="_blank" class="mt-4 inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Visit Resource</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-6 text-center text-gray-600">
+        <p>&copy; 2025 MindfulChat | PHCET IT Dept. | Mini Project </p>
+    </footer>
+</body>
+</html>
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood History - MindfulChat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background-image: url('https://source.unsplash.com/1600x900/?calm,mind');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="bg-white bg-opacity-90 rounded-lg shadow-xl w-full max-w-4xl p-8">
+        <div class="header text-center">
+            <h1 class="text-3xl font-bold text-blue-600">MindfulChat</h1>
+            <p class="text-lg text-gray-700">Your AI-powered mental health assistant</p>
+        </div>
+        
+        <div class="mt-6">
+            <a href="/" class="text-blue-500 hover:underline">← Back to Chat</a>
+            <h2 class="text-2xl font-semibold mt-4">Your Mood History</h2>
+            <p class="text-gray-700">Track how your mood has changed over time.</p>
+            
+            <div class="mood-history-container mt-6">
+                {% if moods %}
+                    {% for mood in moods %}
+                        <div class="mood-entry bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="mood-emoji text-2xl">{{ mood.mood }}</div>
+                            <div class="mood-details">
+                                <div class="mood-date text-sm text-gray-600">{{ mood.timestamp.strftime('%A, %B %d, %Y at %I:%M %p') }}</div>
+                                <div class="mood-notes text-gray-800">{{ mood.notes or 'No notes recorded' }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-moods text-center text-gray-600">
+                        <p>You haven't recorded any moods yet. Start by tracking your mood in the chat!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-6 text-center text-gray-600">
+        <p>&copy; 2025 MindfulChat | PHCET IT Dept. | Mini Project</p>
+    </footer>
+</body>
+</html>
+
