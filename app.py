@@ -84,7 +84,10 @@ MENTAL_HEALTH_RESOURCES = [
 # Chatbot Processor
 class ChatbotProcessor:
     def __init__(self):
+        # Load spaCy model
         self.nlp = spacy.load('en_core_web_sm')
+        
+        # Add SpacyTextBlob to the pipeline
         self.nlp.add_pipe('spacytextblob')
 
     def process_message(self, message):
@@ -135,8 +138,11 @@ class ChatbotProcessor:
         return any(keyword in message.lower() for keyword in resource_keywords)
 
     def analyze_sentiment(self, message):
+        # Analyze sentiment using spaCy and TextBlob
         doc = self.nlp(message)
-        polarity = doc._.polarity
+        
+        # Access polarity from the doc
+        polarity = doc._.blob.polarity
         
         if polarity < -0.1:
             return 'negative'
