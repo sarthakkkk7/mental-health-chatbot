@@ -55,14 +55,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="mt-6 bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-xl font-semibold">Track Your Mood</h3>
+            <p class="text-gray-700 mb-4">How are you feeling today?</p>
+            
+            <div class="mood-tracker flex justify-center gap-2">
+                <button data-mood="😊" class="mood-button p-2 rounded-full bg-gray-100 hover:bg-blue-100 transition duration-300">😊</button>
+                <button data-mood="😐" class="mood-button p-2 rounded-full bg-gray-100 hover:bg-blue-100 transition duration-300">😐</button>
+                <button data-mood="😔" class="mood-button p-2 rounded-full bg-gray-100 hover:bg-blue-100 transition duration-300">😔</button>
+                <button data-mood="😡" class="mood-button p-2 rounded-full bg-gray-100 hover:bg-blue-100 transition duration-300">😡</button>
+                <button data-mood="😢" class="mood-button p-2 rounded-full bg-gray-100 hover:bg-blue-100 transition duration-300">😢</button>
+            </div>
+        
+            <textarea id="moodNotes" class="w-full mt-4 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Add notes (optional)"></textarea>
+        
+            <button id="submitMood" class="w-full mt-4 bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-300">Submit Mood</button>
+        </div>
         
         <div class="mt-6 bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-xl font-semibold">Mental Health Resources</h3>
+            <h3 class="text-xl font-semibold">Quick Links</h3>
             <ul class="mt-4 space-y-2">
-                <li><a href="/resources" class="text-blue-500 hover:underline">National Suicide Prevention Helpline: 9152987821</a></li>
-                <li><a href="/resources" class="text-blue-500 hover:underline">Vandrevala Foundation Helpline</a></li>
-                <li><a href="/resources" class="text-blue-500 hover:underline">Find a Therapist Near You</a></li>
-                <li><a href="/resources" class="text-blue-500 hover:underline">Mental Health Articles</a></li>
+                <li><a href="/mood-history" class="text-blue-500 hover:underline">View Mood History</a></li>
+                <li><a href="/resources" class="text-blue-500 hover:underline">Mental Health Resources</a></li>
             </ul>
             <div class="mt-4 text-sm text-gray-600">
                 <p>If you're in crisis, please contact emergency services or a mental health professional immediately.</p>
@@ -74,12 +89,13 @@
         <p>&copy; 2025 MindfulChat | PHCET IT Dept. | Mini Project</p>
     </footer>
     
+    <!-- JavaScript for Chat -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const chatMessages = document.getElementById('chatMessages');
             const userInput = document.getElementById('userInput');
             const sendButton = document.getElementById('sendButton');
-            
+
             function addUserMessage(message) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'user-message p-4 rounded-lg mb-4';
@@ -87,7 +103,7 @@
                 chatMessages.appendChild(messageDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-            
+
             function addBotMessage(message) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'bot-message p-4 rounded-lg mb-4';
@@ -95,13 +111,13 @@
                 chatMessages.appendChild(messageDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-            
+
             function sendMessage() {
                 const message = userInput.value.trim();
                 if (message !== '') {
                     addUserMessage(message);
                     userInput.value = '';
-                    
+
                     fetch('/chat', {
                         method: 'POST',
                         headers: {
@@ -119,16 +135,69 @@
                     });
                 }
             }
-            
+
             sendButton.addEventListener('click', sendMessage);
-            
-            userInput.addEventListener('keypress', function(e) {
+
+            userInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     sendMessage();
                 }
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const moodButtons = document.querySelectorAll('.mood-button');
+            const moodNotes = document.getElementById('moodNotes');
+            const submitMoodButton = document.getElementById('submitMood');
+    
+            let selectedMood = null;
+    
+            // Handle mood selection
+            moodButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    moodButtons.forEach(btn => btn.classList.remove('bg-blue-200')); // Reset all buttons
+                    button.classList.add('bg-blue-200'); // Highlight selected mood
+                    selectedMood = button.getAttribute('data-mood');
+                });
+            });
+    
+            // Handle mood submission
+            submitMoodButton.addEventListener('click', () => {
+                if (!selectedMood) {
+                    alert('Please select a mood before submitting.');
+                    return;
+                }
+    
+                const notes = moodNotes.value.trim();
+    
+                fetch('/record-mood', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mood: selectedMood,
+                        notes: notes,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Mood recorded successfully!');
+                        moodNotes.value = ''; // Clear notes
+                        moodButtons.forEach(btn => btn.classList.remove('bg-blue-200')); // Reset buttons
+                        selectedMood = null; // Reset selected mood
+                    } else {
+                        alert('Failed to record mood. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-

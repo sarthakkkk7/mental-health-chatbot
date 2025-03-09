@@ -22,7 +22,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(128), nullable=False) 
     email = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     chats = db.relationship('Chat', backref='user', lazy=True)
@@ -192,7 +192,8 @@ def login():
         username = data.get('username')
         password = data.get('password')
         user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password_hash, password):
+
+        if user and user.password == password:  
             session['user_id'] = user.id
             return jsonify({'success': True})
         else:
@@ -207,10 +208,15 @@ def register():
         email = data.get('email')
         password = data.get('password')
         confirm_password = data.get('confirmPassword')
+
         if password != confirm_password:
             return jsonify({'success': False, 'error': 'Passwords do not match'})
-        hashed_password = generate_password_hash(password)
-        new_user = User(username=username, email=email, password_hash=hashed_password)
+
+        new_user = User(
+            username=username,
+            email=email,
+            password=password  
+        )
         db.session.add(new_user)
         db.session.commit()
         session['user_id'] = new_user.id
@@ -223,6 +229,32 @@ def mood_history():
         return redirect(url_for('login'))
     moods = MoodEntry.query.filter_by(user_id=session['user_id']).all()
     return render_template('mood-history.html', moods=moods)
+
+@app.route('/record-mood', methods=['POST'])
+def record_mood():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'User not logged in'})
+
+    data = request.get_json()
+    mood = data.get('mood')
+    notes = data.get('notes')
+
+    if not mood:
+        return jsonify({'success': False, 'error': 'Mood is required'})
+
+    try:
+        new_mood = MoodEntry(
+            user_id=session['user_id'],
+            mood=mood,
+            notes=notes
+        )
+        db.session.add(new_mood)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error recording mood: {e}")
+        return jsonify({'success': False, 'error': 'Failed to record mood'})
 
 @app.route('/resources')
 def resources():
