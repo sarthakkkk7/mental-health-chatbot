@@ -5,7 +5,6 @@ from datetime import datetime
 import cohere
 import os
 import logging
-from werkzeug.security import generate_password_hash, check_password_hash
 import spacy
 from spacytextblob.spacytextblob import SpacyTextBlob
 
