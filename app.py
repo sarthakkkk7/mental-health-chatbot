@@ -110,24 +110,24 @@ class ChatbotProcessor:
         # Define resources based on emotion
         resources = {
             "sad": [
-                {"title": "Coping with Sadness", "url": "https://example.com/coping-sadness"},
-                {"title": "Mindfulness for Sadness", "url": "https://example.com/mindfulness-sadness"}
+                {"title": "Coping with Sadness - The Live Love Laugh Foundation", "url": "https://www.thelivelovelaughfoundation.org/find-help/coping-with-sadness"},
+                {"title": "Dealing with Depression - NIMHANS", "url": " https://nimhans.ac.in/patient-care/dealing-with-depression/"}
             ],
             "unhappy": [
-                {"title": "Dealing with Unhappiness", "url": "https://example.com/dealing-unhappiness"},
-                {"title": "Positive Thinking", "url": "https://example.com/positive-thinking"}
+                {"title": "Managing Unhappiness - MindfulTNC", "url": "https://www.mindfultnc.com/managing-unhappiness"},
+                {"title": "Vandrevala Foundation Helpline", "url": "https://www.vandrevalafoundation.com"}
             ],
             "neutral": [
-                {"title": "Staying Balanced", "url": "https://example.com/staying-balanced"},
-                {"title": "Daily Mindfulness", "url": "https://example.com/daily-mindfulness"}
+                {"title": "Staying Balanced - The Art of Living", "url": "https://www.artofliving.org/in-en/staying-balanced"},
+                {"title": "Mindfulness Meditation Guide - Mindful.org", "url": "https://www.mindful.org/mindfulness-meditation-guide/"}
             ],
             "happy": [
-                {"title": "Maintaining Happiness", "url": "https://example.com/maintaining-happiness"},
-                {"title": "Gratitude Practices", "url": "https://example.com/gratitude-practices"}
+                {"title":  "Maintaining Happiness - The Happiness Project India", "url": "https://www.happinessprojectindia.com/maintaining-happiness"},
+                {"title": "Gratitude Practices - Heartfulness Meditation", "url": "https://www.heartfulness.org/gratitude-practices/"}
             ],
             "excited": [
-                {"title": "Channeling Excitement", "url": "https://example.com/channeling-excitement"},
-                {"title": "Mindful Celebrations", "url": "https://example.com/mindful-celebrations"}
+                {"title": "Channeling Excitement Positively - YourDOST", "url": "https://www.yourdost.com/blog/channeling-excitement-positively"},
+                {"title": "Mindful Celebrations - The Art of Living", "url": "https://www.artofliving.org/in-en/mindful-celebrations"}
             ]
         }
         return resources.get(emotion, [])
