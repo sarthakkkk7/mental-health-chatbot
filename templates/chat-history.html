@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat History - MindfulChat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gradient-to-r from-blue-50 to-purple-50 min-h-screen flex flex-col items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-8">
+        <div class="header">
+            <h1 class="text-3xl font-bold">MindfulChat</h1>
+            <p class="text-lg">Your AI-powered mental health assistant</p>
+        </div>
+        
+        <div class="mt-6">
+            <a href="/" class="text-blue-500 hover:underline">← Back to Chat</a>
+            <h2 class="text-2xl font-semibold mt-4">Your Chat History</h2>
+            <p class="text-gray-700">Review your past conversations with MindfulBot.</p>
+            
+            <div class="chat-history-container mt-6">
+                {% if chats %}
+                    {% for chat in chats %}
+                        <div class="chat-entry bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="chat-details">
+                                <div class="chat-date text-sm text-gray-600">
+                                    {{ chat.timestamp.strftime('%A, %B %d, %Y at %I:%M %p') }}
+                                </div>
+                                <div class="user-message bg-blue-500 text-white p-2 rounded-lg mt-2">
+                                    <strong>You:</strong> {{ chat.message }}
+                                </div>
+                                <div class="bot-message bg-gray-200 text-gray-800 p-2 rounded-lg mt-2">
+                                    <strong>MindfulBot:</strong> {{ chat.response }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-chats text-center text-gray-600">
+                        <p>You haven't had any conversations yet. Start chatting now!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-6 text-center text-gray-600">
+        <p>&copy; 2025 MindfulChat | PHCET IT Dept. | Mini Project</p>
+    </footer>
+</body>
+</html>

@@ -7,6 +7,7 @@ import os
 import logging
 import spacy
 from spacytextblob.spacytextblob import SpacyTextBlob
+from textblob import TextBlob
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -82,50 +83,59 @@ MENTAL_HEALTH_RESOURCES = [
 
 # Chatbot Processor
 class ChatbotProcessor:
-    def __init__(self):
-        # Load spaCy model
-        self.nlp = spacy.load('en_core_web_sm')
-        
-        # Add SpacyTextBlob to the pipeline
-        self.nlp.add_pipe('spacytextblob')
+    def detect_emotion(self, message):
+        """
+        Detect the user's emotion based on the sentiment of their message.
+        """
+        # Analyze sentiment using TextBlob
+        blob = TextBlob(message)
+        polarity = blob.sentiment.polarity
 
-    def process_message(self, message):
-        try:
-            # Check for emergency keywords
-            if any(word in message.lower() for word in ['suicide', 'kill myself', 'end it all', 'want to die']):
-                return "I'm concerned about what you're sharing. If you're having thoughts of harming yourself, please call the National Suicide Prevention Helpline at 9152987821 immediately."
+        # Classify emotion based on polarity
+        if polarity < -0.5:
+            return "sad"
+        elif polarity < 0:
+            return "unhappy"
+        elif polarity == 0:
+            return "neutral"
+        elif polarity < 0.5:
+            return "happy"
+        else:
+            return "excited"
 
-            # Analyze sentiment
-            sentiment = self.analyze_sentiment(message)
-            if sentiment == 'negative':
-                bot_response = "I'm sorry to hear that you're feeling this way. Let's talk about it."
-            elif sentiment == 'positive':
-                bot_response = "I'm glad to hear that you're feeling good! How can I assist you today?"
-            else:
-                bot_response = "Thank you for sharing. How can I assist you today?"
-
-            # Use Cohere to generate a response
-            response = co.generate(
-                model='command',
-                prompt=f"You are a mental health assistant. Provide supportive and empathetic responses to users. Focus on Indian mental health resources.\n\nUser: {message}\nAssistant:",
-                max_tokens=150,
-                temperature=0.7,
-                stop_sequences=["\n"]
-            )
-            bot_response += "\n\n" + response.generations[0].text.strip()
-
-            # Check if resources should be suggested
-            if self.should_suggest_resources(message):
-                bot_response += "\n\nHere are some resources that might help:\n"
-                for resource in MENTAL_HEALTH_RESOURCES:
-                    bot_response += f"- [{resource['title']}]({resource['url']})\n"
-
-            return bot_response
-        except Exception as e:
-            logging.error(f"Cohere API Error: {e}")
-            return "I'm having trouble connecting to the server. Please try again."
+    def get_personalized_resources(self, emotion):
+        """
+        Get personalized resources based on the user's emotion.
+        """
+        # Define resources based on emotion
+        resources = {
+            "sad": [
+                {"title": "Coping with Sadness", "url": "https://example.com/coping-sadness"},
+                {"title": "Mindfulness for Sadness", "url": "https://example.com/mindfulness-sadness"}
+            ],
+            "unhappy": [
+                {"title": "Dealing with Unhappiness", "url": "https://example.com/dealing-unhappiness"},
+                {"title": "Positive Thinking", "url": "https://example.com/positive-thinking"}
+            ],
+            "neutral": [
+                {"title": "Staying Balanced", "url": "https://example.com/staying-balanced"},
+                {"title": "Daily Mindfulness", "url": "https://example.com/daily-mindfulness"}
+            ],
+            "happy": [
+                {"title": "Maintaining Happiness", "url": "https://example.com/maintaining-happiness"},
+                {"title": "Gratitude Practices", "url": "https://example.com/gratitude-practices"}
+            ],
+            "excited": [
+                {"title": "Channeling Excitement", "url": "https://example.com/channeling-excitement"},
+                {"title": "Mindful Celebrations", "url": "https://example.com/mindful-celebrations"}
+            ]
+        }
+        return resources.get(emotion, [])
 
     def should_suggest_resources(self, message):
+        """
+        Check if resources should be suggested based on keywords.
+        """
         # Keywords or phrases that trigger resource suggestions
         resource_keywords = [
             'help', 'resources', 'support', 'therapy', 'counseling', 
@@ -136,20 +146,53 @@ class ChatbotProcessor:
         # Check if any keyword is in the user's message
         return any(keyword in message.lower() for keyword in resource_keywords)
 
-    def analyze_sentiment(self, message):
-        # Analyze sentiment using spaCy and TextBlob
-        doc = self.nlp(message)
-        
-        # Access polarity from the doc
-        polarity = doc._.blob.polarity
-        
-        if polarity < -0.1:
-            return 'negative'
-        elif polarity > 0.1:
-            return 'positive'
-        else:
-            return 'neutral'
-# Initialize chatbot processor
+    def process_message(self, message):
+        """
+        Process the user's message, detect emotion, and provide a personalized response.
+        """
+        try:
+            # Check for emergency keywords 
+            if any(word in message.lower() for word in ['suicide', 'kill myself', 'end it all', 'want to die']):
+                return "I'm concerned about what you're sharing. If you're having thoughts of harming yourself, please call the National Suicide Prevention Helpline at 9152987821 immediately."
+
+            # Detect emotion 
+            emotion = self.detect_emotion(message)
+            print(f"Detected emotion: {emotion}")
+
+            # Customize response based on emotion 
+            if emotion in ["sad", "unhappy"]:
+                bot_response = "I'm sorry to hear that you're feeling this way. Let's talk about it.\n\n"
+            elif emotion == "neutral":
+                bot_response = "Thank you for sharing. How can I assist you today?\n\n"
+            else:
+                bot_response = "I'm glad to hear that you're feeling good! How can I assist you today?\n\n"
+
+            # Add personalized resources to the response 
+            personalized_resources = self.get_personalized_resources(emotion)
+            if personalized_resources:
+                bot_response += "Here are some resources that might help:\n"
+                for resource in personalized_resources:
+                    bot_response += f"- [{resource['title']}]({resource['url']})\n"
+
+            response = co.generate(
+                model='command',
+                prompt=f"You are a mental health assistant. Provide supportive and empathetic responses to users. Focus on Indian mental health resources.\n\nUser: {message}\nAssistant:",
+                max_tokens=150,
+                temperature=0.7,
+                stop_sequences=["\n"]
+            )
+            bot_response += "\n\n" + response.generations[0].text.strip()
+
+            if self.should_suggest_resources(message):
+                bot_response += "\n\nHere are some additional resources that might help:\n"
+                for resource in MENTAL_HEALTH_RESOURCES:
+                    bot_response += f"- [{resource['title']}]({resource['url']})\n"
+
+            return bot_response
+        except Exception as e:
+            logging.error(f"Cohere API Error: {e}")
+            return "I'm having trouble connecting to the server. Please try again."
+# Start Chatbot processor
 chatbot = ChatbotProcessor()
 
 # Create database if it doesn't exist
@@ -226,7 +269,10 @@ def register():
 def mood_history():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    moods = MoodEntry.query.filter_by(user_id=session['user_id']).all()
+    
+    moods = MoodEntry.query.filter_by(user_id=session['user_id']).order_by(MoodEntry.timestamp).all()
+    print("Moods fetched from database:", moods)
+    
     return render_template('mood-history.html', moods=moods)
 
 @app.route('/record-mood', methods=['POST'])
@@ -254,6 +300,13 @@ def record_mood():
         db.session.rollback()
         logging.error(f"Error recording mood: {e}")
         return jsonify({'success': False, 'error': 'Failed to record mood'})
+    
+@app.route('/chat-history')
+def chat_history():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    chats = Chat.query.filter_by(user_id=session['user_id']).order_by(Chat.timestamp.desc()).all()
+    return render_template('chat-history.html', chats=chats)    
 
 @app.route('/resources')
 def resources():
