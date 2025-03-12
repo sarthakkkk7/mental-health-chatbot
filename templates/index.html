@@ -13,7 +13,7 @@
             background-position: center;
         }
         .user-message {
-            background-color: #3b82f6; /* Blue */
+            background-color: #3b82f6; 
             color: white;
             border-radius: 1rem 1rem 0 1rem;
             align-self: flex-end;
@@ -21,8 +21,8 @@
             margin-left: auto;
         }
         .bot-message {
-            background-color: #e2e8f0; /* Light gray */
-            color: #1e293b; /* Dark gray */
+            background-color: #e2e8f0; 
+            color: #1e293b; 
             border-radius: 1rem 1rem 1rem 0;
             align-self: flex-start;
             max-width: 70%;
@@ -104,7 +104,7 @@
             function addBotMessage(message) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'bot-message p-4 rounded-lg mb-4';
-                messageDiv.innerHTML = message; // Use innerHTML to render links
+                messageDiv.innerHTML = message; 
                 chatMessages.appendChild(messageDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
@@ -159,7 +159,7 @@
                 });
             });
     
-            // Handle mood submission
+            
             submitMoodButton.addEventListener('click', () => {
                 if (!selectedMood) {
                     alert('Please select a mood before submitting.');
@@ -182,9 +182,9 @@
                 .then(data => {
                     if (data.success) {
                         alert('Mood recorded successfully!');
-                        moodNotes.value = ''; // Clear notes
+                        moodNotes.value = ''; 
                         moodButtons.forEach(btn => btn.classList.remove('bg-blue-200')); // Reset buttons
-                        selectedMood = null; // Reset selected mood
+                        selectedMood = null; 
                     } else {
                         alert('Failed to record mood. Please try again.');
                     }
