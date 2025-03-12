@@ -13,19 +13,19 @@ with app.app_context():
         admin = User(
             username="admin",
             email="admin@mindfulchat.com",
-            password="adminpassword"  # Plain password
+            password="adminpassword"  
         )
 
         test_user = User(
             username="testuser",
             email="test@example.com",
-            password="testpassword"  # Plain password
+            password="testpassword"  
         )
 
         db.session.add_all([admin, test_user])
         db.session.commit()
 
-        # Add sample chats
+        # sample chats
         chat1 = Chat(
             user_id=admin.id,
             message="Hello, how are you?",
@@ -43,7 +43,7 @@ with app.app_context():
         db.session.add_all([chat1, chat2])
         db.session.commit()
 
-        # Add sample mood entries
+        # sample mood entries
         mood1 = MoodEntry(
             user_id=admin.id,
             mood="😊",
@@ -61,7 +61,7 @@ with app.app_context():
         db.session.add_all([mood1, mood2])
         db.session.commit()
 
-        # Add sample resources
+        # sample resources
         resources = [
             Resource(
                 title="National Institute of Mental Health and Neurosciences (NIMHANS)",

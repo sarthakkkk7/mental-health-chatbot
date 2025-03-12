@@ -9,16 +9,16 @@ import spacy
 from spacytextblob.spacytextblob import SpacyTextBlob
 from textblob import TextBlob
 
-# Initialize Flask app
+# Initialize Flask 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mindfulchat.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize database
+# Initialize db
 db = SQLAlchemy(app)
 
-# Database Models
+# Db Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -47,13 +47,13 @@ class Resource(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     url = db.Column(db.String(255))
-    resource_type = db.Column(db.String(50))  # article, hotline, exercise, etc.
+    resource_type = db.Column(db.String(50))  
 
-# Cohere API Key (replace with your actual key)
+# Cohere API Key
 cohere_api_key = "9ugWXHUfjx1a10JgzDyBWGaetyYQwjzaMXExeqM8"
 co = cohere.Client(cohere_api_key)
 
-# Mental Health Resources (Indian-specific)
+# Resources
 MENTAL_HEALTH_RESOURCES = [
     {
         "title": "National Institute of Mental Health and Neurosciences (NIMHANS)",
@@ -87,7 +87,7 @@ class ChatbotProcessor:
         """
         Detect the user's emotion based on the sentiment of their message.
         """
-        # Analyze sentiment using TextBlob
+        # Analyze sentiment
         blob = TextBlob(message)
         polarity = blob.sentiment.polarity
 
@@ -107,7 +107,7 @@ class ChatbotProcessor:
         """
         Get personalized resources based on the user's emotion.
         """
-        # Define resources based on emotion
+        # resources based on emotion
         resources = {
             "sad": [
                 {"title": "Coping with Sadness - The Live Love Laugh Foundation", "url": "https://www.thelivelovelaughfoundation.org/find-help/coping-with-sadness"},
@@ -136,14 +136,14 @@ class ChatbotProcessor:
         """
         Check if resources should be suggested based on keywords.
         """
-        # Keywords or phrases that trigger resource suggestions
+        # Extreme Keywords or phrases that trigger resource suggestions
         resource_keywords = [
             'help', 'resources', 'support', 'therapy', 'counseling', 
             'depressed', 'anxious', 'stress', 'mental health', 
             'feeling low', 'feeling down', 'feeling sad'
         ]
         
-        # Check if any keyword is in the user's message
+    
         return any(keyword in message.lower() for keyword in resource_keywords)
 
     def process_message(self, message):
@@ -195,7 +195,7 @@ class ChatbotProcessor:
 # Start Chatbot processor
 chatbot = ChatbotProcessor()
 
-# Create database if it doesn't exist
+
 with app.app_context():
     db.create_all()
 
