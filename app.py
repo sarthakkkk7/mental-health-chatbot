@@ -1,12 +1,10 @@
-# app.py
+#app.py
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import cohere
 import os
 import logging
-import spacy
-from spacytextblob.spacytextblob import SpacyTextBlob
 from textblob import TextBlob
 
 # Initialize Flask 
@@ -107,43 +105,33 @@ class ChatbotProcessor:
         """
         Get personalized resources based on the user's emotion.
         """
-        # resources based on emotion
-        resources = {
-            "sad": [
-                {"title": "Coping with Sadness - The Live Love Laugh Foundation", "url": "https://www.thelivelovelaughfoundation.org/find-help/coping-with-sadness"},
-                {"title": "Dealing with Depression - NIMHANS", "url": " https://nimhans.ac.in/patient-care/dealing-with-depression/"}
-            ],
-            "unhappy": [
-                {"title": "Managing Unhappiness - MindfulTNC", "url": "https://www.mindfultnc.com/managing-unhappiness"},
-                {"title": "Vandrevala Foundation Helpline", "url": "https://www.vandrevalafoundation.com"}
-            ],
-            "neutral": [
-                {"title": "Staying Balanced - The Art of Living", "url": "https://www.artofliving.org/in-en/staying-balanced"},
-                {"title": "Mindfulness Meditation Guide - Mindful.org", "url": "https://www.mindful.org/mindfulness-meditation-guide/"}
-            ],
-            "happy": [
-                {"title":  "Maintaining Happiness - The Happiness Project India", "url": "https://www.happinessprojectindia.com/maintaining-happiness"},
-                {"title": "Gratitude Practices - Heartfulness Meditation", "url": "https://www.heartfulness.org/gratitude-practices/"}
-            ],
-            "excited": [
-                {"title": "Channeling Excitement Positively - YourDOST", "url": "https://www.yourdost.com/blog/channeling-excitement-positively"},
-                {"title": "Mindful Celebrations - The Art of Living", "url": "https://www.artofliving.org/in-en/mindful-celebrations"}
-            ]
-        }
-        return resources.get(emotion, [])
+        # Only suggest resources for specific emotional states
+        if emotion in ["sad", "unhappy"]:
+            resources = {
+                "sad": [
+                    {"title": "Coping with Sadness - The Live Love Laugh Foundation", "url": "https://www.thelivelovelaughfoundation.org/find-help/coping-with-sadness"},
+                    {"title": "Dealing with Depression - NIMHANS", "url": " https://nimhans.ac.in/patient-care/dealing-with-depression/"}
+                ],
+                "unhappy": [
+                    {"title": "Managing Unhappiness - MindfulTNC", "url": "https://www.mindfultnc.com/managing-unhappiness"},
+                    {"title": "Vandrevala Foundation Helpline", "url": "https://www.vandrevalafoundation.com"}
+                ]
+            }
+            return resources.get(emotion, [])
+        return []
 
     def should_suggest_resources(self, message):
         """
-        Check if resources should be suggested based on keywords.
+        Check if resources should be suggested based on keywords or emotional state.
         """
-        # Extreme Keywords or phrases that trigger resource suggestions
+        # Keywords or phrases that trigger resource suggestions
         resource_keywords = [
             'help', 'resources', 'support', 'therapy', 'counseling', 
             'depressed', 'anxious', 'stress', 'mental health', 
-            'feeling low', 'feeling down', 'feeling sad'
+            'feeling low', 'feeling down', 'feeling sad', 'need help'
         ]
         
-    
+        # Only suggest resources if the message contains specific keywords
         return any(keyword in message.lower() for keyword in resource_keywords)
 
     def process_message(self, message):
@@ -161,41 +149,38 @@ class ChatbotProcessor:
 
             # Customize response based on emotion 
             if emotion in ["sad", "unhappy"]:
-                bot_response = "I'm sorry to hear that you're feeling this way. Let's talk about it.\n\n"
+                bot_response = "I'm sorry to hear that you're feeling this way. Let's talk about it. What's been on your mind?\n\n"
             elif emotion == "neutral":
                 bot_response = "Thank you for sharing. How can I assist you today?\n\n"
             else:
                 bot_response = "I'm glad to hear that you're feeling good! How can I assist you today?\n\n"
 
-            # Add personalized resources to the response 
-            personalized_resources = self.get_personalized_resources(emotion)
-            if personalized_resources:
-                bot_response += "Here are some resources that might help:\n"
-                for resource in personalized_resources:
-                    bot_response += f"- [{resource['title']}]({resource['url']})\n"
-
+            # Generate a conversational response using Cohere API
             response = co.generate(
                 model='command',
-                prompt=f"You are a mental health assistant. Provide supportive and empathetic responses to users. Focus on Indian mental health resources.\n\nUser: {message}\nAssistant:",
+                prompt=f"You are a mental health assistant. Provide supportive and empathetic responses to users. Focus on having a natural conversation and avoid being too repetitive. Only suggest resources if the user explicitly asks for help or seems to be in distress.\n\nUser: {message}\nAssistant:",
                 max_tokens=150,
                 temperature=0.7,
                 stop_sequences=["\n"]
             )
-            bot_response += "\n\n" + response.generations[0].text.strip()
+            bot_response += response.generations[0].text.strip()
 
+            # Suggest resources only if necessary
             if self.should_suggest_resources(message):
-                bot_response += "\n\nHere are some additional resources that might help:\n"
-                for resource in MENTAL_HEALTH_RESOURCES:
+                bot_response += "\n\nHere are some resources that might help:\n"
+                personalized_resources = self.get_personalized_resources(emotion)
+                for resource in personalized_resources:
                     bot_response += f"- [{resource['title']}]({resource['url']})\n"
 
             return bot_response
         except Exception as e:
             logging.error(f"Cohere API Error: {e}")
             return "I'm having trouble connecting to the server. Please try again."
+
 # Start Chatbot processor
 chatbot = ChatbotProcessor()
 
-
+# Create database tables
 with app.app_context():
     db.create_all()
 
@@ -320,5 +305,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
