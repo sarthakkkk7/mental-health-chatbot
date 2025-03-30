@@ -48,7 +48,7 @@ class Resource(db.Model):
     resource_type = db.Column(db.String(50))  
 
 # Cohere API Key
-cohere_api_key = "9ugWXHUfjx1a10JgzDyBWGaetyYQwjzaMXExeqM8"
+cohere_api_key = "Paste your API key here"
 co = cohere.Client(cohere_api_key)
 
 # Resources
