@@ -105,7 +105,7 @@ class ChatbotProcessor:
         """
         Get personalized resources based on the user's emotion.
         """
-        # Only suggest resources for specific emotional states
+        
         if emotion in ["sad", "unhappy"]:
             resources = {
                 "sad": [
@@ -151,14 +151,44 @@ class ChatbotProcessor:
             if emotion in ["sad", "unhappy"]:
                 bot_response = "I'm sorry to hear that you're feeling this way. Let's talk about it. What's been on your mind?\n\n"
             elif emotion == "neutral":
-                bot_response = "Thank you for sharing. How can I assist you today?\n\n"
+                bot_response = "Thank you for sharing.\n\n"
             else:
                 bot_response = "I'm glad to hear that you're feeling good! How can I assist you today?\n\n"
 
             # Generate a conversational response using Cohere API
             response = co.generate(
                 model='command',
-                prompt=f"You are a mental health assistant. Provide supportive and empathetic responses to users. Focus on having a natural conversation and avoid being too repetitive. Only suggest resources if the user explicitly asks for help or seems to be in distress.\n\nUser: {message}\nAssistant:",
+                prompt=f"""You are a mental health assistant designed to provide supportive, empathetic, and COMPLETE responses. Follow these guidelines:
+                1. Always speak naturally like ChatGPT/DeepSeek - use conversational markers ("That sounds...", "You might...")
+                2. For any suggestions:
+                - Give 3-5 specific tips using numbered lists
+                - Add 1-sentence explanations
+                - Include full action steps (never end at colon)
+                3. Emotional support framework:
+                A. Validate feelings ("I understand that...")
+                B. Provide complete strategies
+                C. Offer optional resources ONLY if requested
+                D. Ask a follow-up question
+                4. Never be repetitive - vary response structures
+                5. Complete all thoughts fully - no partial lists
+                6. You can use emojis to enhance empathy, but don't overdo it.
+                7. You can use humor, but only if it fits the context and is appropriate like tell jokes or light-hearted comments when user needs cheering up.
+                8. Act similar to a therapist - be supportive, but not overly formal or clinical, don't forget of your friendly side.
+                9. Be up to-date with the latest mental health trends and research and current events and also refer memes and pop culture references when appropriate.
+                10. Try creating mental health awareness while being sensitive to the user's feelings.
+                11. You can use Hinglish (Hindi + English) to connect with the user better, but don't overdo it.
+                12. Also crack jokes in Hinglish to make the user smile and lighten the mood, make sure the jokes connect to Indian culture and are relatable to the user.
+                13. Give mental health related responses in Hinglish when user sends messages in Hinglish.
+                Example of GOOD response:
+                "I appreciate you sharing that. Here are three complete strategies you could try:
+                1. Progressive muscle relaxation: Tense/release muscle groups for 2 minutes. Helps release physical stress.
+                2. Thought journaling: Write down worries then challenge their accuracy. Breaks negative cycles.
+                3. 5-minute meditation: Focus on breath while counting 1-10 repeatedly. Resets mental state.
+                Would you like me to walk you through one of these now, or share more options?"
+
+               Current conversation:
+               User: {message}
+               Assistant:""",
                 max_tokens=150,
                 temperature=0.7,
                 stop_sequences=["\n"]
