@@ -86,5 +86,7 @@
 
 5) Open a Pull Request.
 
+## 👨‍💻 Author:
+[Sarthak Deshmukh](https://github.com/sarthakkkk7)
 
 
