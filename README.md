@@ -1,5 +1,7 @@
 # MindfulChat - AI Mental Health Support System
 
+To address the challenges of accessibility, stigma, and immediate support in mental health care, this project proposes the development of an AI-powered mental health chatbot. 
+
 ## ✨Features :
 
 1) AI-Powered Chatbot – Empathetic responses using Cohere API and sentiment analysis.
@@ -24,67 +26,69 @@
 
 ## ⚙Installation :
 
-  ###  Prerequisites:
-   Python 3.8+
+   ###  Prerequisites:
+    Python 3.8+
 
-   Cohere API Key
+    Cohere API Key
 
   ### Steps:
 
   #### i) Clone the repo:
-
+  ```
   git clone https://github.com/yourusername/MindfulChat.git
-
-  cd MindfulChat
-
-  #### ii) Install dependencies:
  
+  cd MindfulChat
+```
+  #### ii) Install dependencies:
+ ```
    pip install -r requirements.txt
-
+```
   #### iii) Set up the database:
-
+```
    python database_setup.py
-
+```
   #### iv) Run the app:
-
+```
    python app.py
-
- v) Open http://localhost:5000 in your browser.
-
+```
+ #### v) Locally host:
+ ```
+  Open http://localhost:5000 in your browser.
+```
 ## 🚀Usage :
-#### Login/Register:
+- #### Login/Register:
 
- Use admin/adminpassword or testuser/testpassword (from database_setup.py).
+     Use admin/adminpassword or testuser/testpassword (from database_setup.py).
 
-#### Chat with MindfulBot:
+- #### Chat with MindfulBot:
 
- Type messages and get AI-generated responses.
+     Type messages and get AI-generated responses.
 
-#### Track Your Mood:
+- #### Track Your Mood:
 
- Click emojis (😊/😢) and add notes.
+     Click emojis (😊/😢) and add notes.
 
-#### View History:
+- #### View History:
 
- Check past chats (/chat-history) and moods (/mood-history).
+     Check past chats (/chat-history) and moods (/mood-history).
 
-## 🤝Contributing
+## 🤝Contributing:
+ 
+#### 1) Fork the repository.
 
-1) Fork the repository.
-
-2) Create a new branch:
-
+#### 2) Create a new branch:
+```
    git checkout -b feature/your-feature
-
-3) Commit changes:
-
+```
+#### 3) Commit changes:
+```
    git commit -m "Add your feature
-
-4) Push to the branch:
-
+```
+#### 4) Push to the branch:
+```
    git push origin feature/your-feature
-
-5) Open a Pull Request.
+```
+#### 5) Open a Pull Request.
 
 ## 👨‍💻 Author:
 [Sarthak Deshmukh](https://github.com/sarthakkkk7)
