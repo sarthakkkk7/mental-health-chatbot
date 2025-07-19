@@ -6,7 +6,9 @@ import cohere
 import os
 import logging
 from textblob import TextBlob
+from dotenv import load_dotenv
 
+load_dotenv()  # Load environment variables from .env file
 # Initialize Flask 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -48,7 +50,7 @@ class Resource(db.Model):
     resource_type = db.Column(db.String(50))  
 
 # Cohere API Key
-cohere_api_key = "Paste your API key here"
+cohere_api_key = os.getenv('cohere_api_key')
 co = cohere.Client(cohere_api_key)
 
 # Resources
